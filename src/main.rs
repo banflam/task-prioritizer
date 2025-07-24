@@ -58,5 +58,9 @@ struct Task {
 }
 
 fn main() {
-    println!("Hello, world!");
+    let mut tasks = load_tasks();
+    let new_task = create_new_task();
+    tasks = insert_task_interactively(tasks, new_task);
+    save_tasks(&tasks);
+    println!("Task saved.");
 }
