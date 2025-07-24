@@ -4,7 +4,6 @@ use std::io::{self, Write};
 use crossterm::event::{self, Event, KeyCode, KeyEvent};
 use crossterm::{terminal, ExecutableCommand};
 use std::io::{stdout};
-use std::fmt::Write as FmtWrite;
 use std::fmt::Write as FmtWrite; // For write!() on String
 
 #[derive(Serialize, Deserialize, Debug, Clone)]
