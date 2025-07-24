@@ -15,6 +15,7 @@ fn prompt(msg: &str) -> String {
     input.trim().to_string()
 }
 
+
 fn save_tasks(tasks: &Vec<Task>) {
     let data = serde_json::to_string_pretty(tasks).unwrap();
     fs::write("tasks.json", data).unwrap();
@@ -22,7 +23,7 @@ fn save_tasks(tasks: &Vec<Task>) {
 
 struct Task {
     name: String,
-    due_date: String,
+    due_date: Option<String>,
     importance: u8,
 }
 
