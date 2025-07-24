@@ -5,6 +5,7 @@ use crossterm::event::{self, Event, KeyCode, KeyEvent};
 use crossterm::{terminal, ExecutableCommand};
 use std::io::{stdout};
 use std::fmt::Write as FmtWrite;
+use std::fmt::Write as FmtWrite; // For write!() on String
 
 #[derive(Serialize, Deserialize, Debug, Clone)]
 struct Task {
@@ -41,7 +42,6 @@ fn create_new_task() -> Option<Task> {
     Some(Task { description, due_date })
 }
 
-use std::fmt::Write as FmtWrite; // For write!() on String
 
 fn insert_task_interactively(mut tasks: Vec<Task>, new_task: Task) -> Vec<Task> {
     let mut pos: usize = 0;
