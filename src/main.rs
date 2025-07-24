@@ -6,7 +6,6 @@ use std::io::{self, Write};
 struct Task {
     description: String,
     due_date: Option<String>,
-    importance: u8,
 }
 
 fn prompt(msg: &str) -> String {
@@ -31,20 +30,21 @@ fn create_new_task() -> Task {
     let description = prompt("Enter task: ");
     let due = prompt("Enter due date (or leave blank): ");
     let due_date = if due.is_empty() { None } else { Some(due) };
-    let importance: u8 = prompt("Importance (1-5): ").parse().unwrap_or(3);
-    Task { description, due_date, importance }
+    Task { description, due_date }
 }
 
 fn insert_task_interactively(mut tasks: Vec<Task>, new_task: Task) -> Vec<Task> {
     println!("\nCurrent tasks:");
     for (i, task) in tasks.iter().enumerate() {
-        println!("{:>2}: [{}] {}", i, task.importance, task.description);
+        let pos = i + 1; // user-visible position
+        println!("{:>2}: {}", pos, task.description);
     }
 
-    let mut pos = tasks.len();
+    let mut pos = tasks.len(); // default insert at end
     loop {
-        println!("\nNew task: [{}] {}", new_task.importance, new_task.description);
-        println!("Insert at position: {}", pos);
+        let visible_pos = pos + 1;
+        println!("\nNew task: {}", new_task.description);
+        println!("Insert at position: {}", visible_pos);
         println!("Commands: (u)p, (d)own, (s)ave");
 
         match prompt("> ").as_str() {
