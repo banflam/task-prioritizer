@@ -14,6 +14,13 @@ fn prompt(msg: &str) -> String {
     io::stdin().read_line(&mut input).unwrap();
     input.trim().to_string()
 }
+fn create_new_task() -> Task {
+    let description = prompt("Enter task: ");
+    let due = prompt("Enter due date (or leave blank): ");
+    let due_date = if due.is_empty() { None } else { Some(due) };
+    let importance: u8 = prompt("Importance (1-5): ").parse().unwrap_or(3);
+    Task { description, due_date, importance }
+}
 
 
 fn save_tasks(tasks: &Vec<Task>) {
