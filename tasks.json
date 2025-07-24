@@ -1,22 +1,22 @@
 [
   {
+    "description": "first task",
+    "due_date": null
+  },
+  {
     "description": "Shave beard",
-    "due_date": null,
-    "importance": 1
+    "due_date": null
   },
   {
     "description": "third task",
-    "due_date": null,
-    "importance": 3
+    "due_date": null
   },
   {
     "description": "Dance",
-    "due_date": null,
-    "importance": 5
+    "due_date": null
   },
   {
     "description": "fourth task",
-    "due_date": null,
-    "importance": 2
+    "due_date": null
   }
 ]
