@@ -44,31 +44,29 @@ fn create_new_task() -> Option<Task> {
 
 fn insert_task_interactively(mut tasks: Vec<Task>, new_task: Task) -> Vec<Task> {
     let mut pos: usize = 0;
-    terminal::enable_raw_mode().unwrap();
     let mut stdout = stdout();
+    terminal::enable_raw_mode().unwrap();
 
     loop {
-        stdout.execute(terminal::Clear(terminal::ClearType::All)).unwrap();
-        stdout.execute(crossterm::cursor::MoveTo(0, 0)).unwrap();
+        execute!(stdout, Clear(ClearType::All), MoveTo(0, 0)).unwrap();
 
-        let mut buffer = String::new();
-        writeln!(buffer, "Use 'j' (down), 'k' (up), Enter to insert:").unwrap();
+        // Header
+        println!("Use 'j' (down), 'k' (up), Enter to insert:");
 
+        // Draw task list with manual cursor moves
         for (i, task) in tasks.iter().enumerate() {
-            if i == pos {
-                writeln!(buffer, "> {}", task.description).unwrap();
-            } else {
-                writeln!(buffer, "  {}", task.description).unwrap();
-            }
+            let y = (i + 1) as u16 + 1; // +1 for header
+            let prefix = if i == pos { "> " } else { "  " };
+            execute!(stdout, MoveTo(0, y)).unwrap();
+            write!(stdout, "{}{}", prefix, task.description).unwrap();
         }
 
-        if pos == tasks.len() {
-            writeln!(buffer, "> [insert at end]").unwrap();
-        } else {
-            writeln!(buffer, "  [insert at end]").unwrap();
-        }
+        // Show the "[insert at end]" line
+        let y = (tasks.len() + 1) as u16 + 1;
+        execute!(stdout, MoveTo(0, y)).unwrap();
+        let prefix = if pos == tasks.len() { "> " } else { "  " };
+        write!(stdout, "{}[insert at end]", prefix).unwrap();
 
-        write!(stdout, "{}", buffer).unwrap();
         stdout.flush().unwrap();
 
         if let Event::Key(KeyEvent { code, .. }) = event::read().unwrap() {
