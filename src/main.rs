@@ -4,7 +4,6 @@ use std::io::{self, Write};
 use crossterm::event::{self, Event, KeyCode, KeyEvent};
 use crossterm::{
     cursor:MoveTo,
-    event::{self, Event, KeyCode, KeyEvent},
     execute,
     terminal::{self, Clear, ClearType},
 };
