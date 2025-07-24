@@ -3,7 +3,8 @@ use std::fs;
 use std::io::{self, Write};
 use crossterm::event::{self, Event, KeyCode, KeyEvent};
 use crossterm::{terminal, ExecutableCommand};
-use std::io::{stdout, Write};
+use std::io::{stdout};
+use std::fmt::Write as FmtWrite;
 
 #[derive(Serialize, Deserialize, Debug, Clone)]
 struct Task {
@@ -40,34 +41,37 @@ fn create_new_task() -> Option<Task> {
     Some(Task { description, due_date })
 }
 
+use std::fmt::Write as FmtWrite; // For write!() on String
+
 fn insert_task_interactively(mut tasks: Vec<Task>, new_task: Task) -> Vec<Task> {
     let mut pos: usize = 0;
-
     terminal::enable_raw_mode().unwrap();
     let mut stdout = stdout();
 
     loop {
-        // Clear screen
         stdout.execute(terminal::Clear(terminal::ClearType::All)).unwrap();
         stdout.execute(crossterm::cursor::MoveTo(0, 0)).unwrap();
 
-        println!("Use 'j' (down), 'k' (up), Enter to insert:");
+        let mut buffer = String::new();
+        writeln!(buffer, "Use 'j' (down), 'k' (up), Enter to insert:").unwrap();
 
         for (i, task) in tasks.iter().enumerate() {
             if i == pos {
-                println!("> {}", task.description);
+                writeln!(buffer, "> {}", task.description).unwrap();
             } else {
-                println!("  {}", task.description);
+                writeln!(buffer, "  {}", task.description).unwrap();
             }
         }
 
         if pos == tasks.len() {
-            println!("> [insert at end]");
+            writeln!(buffer, "> [insert at end]").unwrap();
         } else {
-            println!("  [insert at end]");
+            writeln!(buffer, "  [insert at end]").unwrap();
         }
 
-        // Wait for input
+        write!(stdout, "{}", buffer).unwrap();
+        stdout.flush().unwrap();
+
         if let Event::Key(KeyEvent { code, .. }) = event::read().unwrap() {
             match code {
                 KeyCode::Char('j') if pos < tasks.len() => pos += 1,
@@ -75,7 +79,7 @@ fn insert_task_interactively(mut tasks: Vec<Task>, new_task: Task) -> Vec<Task> 
                 KeyCode::Enter => break,
                 KeyCode::Esc => {
                     terminal::disable_raw_mode().unwrap();
-                    return tasks; // cancel insert
+                    return tasks;
                 }
                 _ => {}
             }
