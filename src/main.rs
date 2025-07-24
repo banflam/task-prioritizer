@@ -1,6 +1,9 @@
 use serde::{Serialize, Deserialize};
 use std::fs;
 use std::io::{self, Write};
+use crossterm::event::{self, Event, KeyCode, KeyEvent};
+use crossterm::{terminal, ExecutableCommand};
+use std::io::{stdout, Write};
 
 #[derive(Serialize, Deserialize, Debug, Clone)]
 struct Task {
@@ -38,28 +41,48 @@ fn create_new_task() -> Option<Task> {
 }
 
 fn insert_task_interactively(mut tasks: Vec<Task>, new_task: Task) -> Vec<Task> {
-    println!("\nCurrent tasks:");
-    for (i, task) in tasks.iter().enumerate() {
-        let pos = i + 1;
-        println!("{:>2}: {}", pos, task.description);
-    }
+    let mut pos: usize = 0;
 
-    let mut pos = tasks.len();
+    terminal::enable_raw_mode().unwrap();
+    let mut stdout = stdout();
+
     loop {
-        let visible_pos = pos + 1;
-        println!("\nNew task: {}", new_task.description);
-        println!("Insert at position: {}", visible_pos);
-        println!("Commands: (u)p, (d)own, (s)ave, (q)uit without saving");
+        // Clear screen
+        stdout.execute(terminal::Clear(terminal::ClearType::All)).unwrap();
+        stdout.execute(crossterm::cursor::MoveTo(0, 0)).unwrap();
 
-        match prompt("> ").as_str() {
-            "u" if pos > 0 => pos -= 1,
-            "d" if pos < tasks.len() => pos += 1,
-            "s" => break,
-            "q" => return tasks, // discard new_task
-            _ => println!("Invalid input"),
+        println!("Use 'j' (down), 'k' (up), Enter to insert:");
+
+        for (i, task) in tasks.iter().enumerate() {
+            if i == pos {
+                println!("> {}", task.description);
+            } else {
+                println!("  {}", task.description);
+            }
+        }
+
+        if pos == tasks.len() {
+            println!("> [insert at end]");
+        } else {
+            println!("  [insert at end]");
+        }
+
+        // Wait for input
+        if let Event::Key(KeyEvent { code, .. }) = event::read().unwrap() {
+            match code {
+                KeyCode::Char('j') if pos < tasks.len() => pos += 1,
+                KeyCode::Char('k') if pos > 0 => pos -= 1,
+                KeyCode::Enter => break,
+                KeyCode::Esc => {
+                    terminal::disable_raw_mode().unwrap();
+                    return tasks; // cancel insert
+                }
+                _ => {}
+            }
         }
     }
 
+    terminal::disable_raw_mode().unwrap();
     tasks.insert(pos, new_task);
     tasks
 }
