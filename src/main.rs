@@ -2,9 +2,8 @@ use serde::{Serialize, Deserialize};
 use std::fs;
 use std::io::{self, Write};
 use crossterm::event::{self, Event, KeyCode, KeyEvent};
-use crossterm::{terminal, ExecutableCommand};
+use crossterm::{terminal};
 use std::io::{stdout};
-use std::fmt::Write as FmtWrite; // For write!() on String
 
 #[derive(Serialize, Deserialize, Debug, Clone)]
 struct Task {
