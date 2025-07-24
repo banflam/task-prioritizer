@@ -22,6 +22,29 @@ fn create_new_task() -> Task {
     Task { description, due_date, importance }
 }
 
+fn insert_task_interactively(mut tasks: Vec<Task>, new_task: Task) -> Vec<Task> {
+    println!("\nCurrent tasks:");
+    for (i, task) in tasks.iter().enumerate() {
+        println!("{:>2}: [{}] {}", i, task.importance, task.description);
+    }
+
+    let mut pos = tasks.len();
+    loop {
+        println!("\nNew task: [{}] {}", new_task.importance, new_task.description);
+        println!("Insert at position: {}", pos);
+        println!("Commands: (u)p, (d)own, (s)ave");
+
+        match prompt("> ").as_str() {
+            "u" if pos > 0 => pos -= 1,
+            "d" if pos < tasks.len() => pos += 1,
+            "s" => break,
+            _ => println!("Invalid"),
+        }
+    }
+
+    tasks.insert(pos, new_task);
+    tasks
+}
 
 fn save_tasks(tasks: &Vec<Task>) {
     let data = serde_json::to_string_pretty(tasks).unwrap();
