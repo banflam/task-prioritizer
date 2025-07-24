@@ -2,7 +2,12 @@ use serde::{Serialize, Deserialize};
 use std::fs;
 use std::io::{self, Write};
 use crossterm::event::{self, Event, KeyCode, KeyEvent};
-use crossterm::{terminal};
+use crossterm::{
+    cursor:MoveTo,
+    event::{self, Event, KeyCode, KeyEvent},
+    execute,
+    terminal::{self, Clear, ClearType},
+};
 use std::io::{stdout};
 
 #[derive(Serialize, Deserialize, Debug, Clone)]
